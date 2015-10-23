@@ -4,6 +4,7 @@ type_Qseven="QSEVEN"
 type_uQseven="UQSEVEN"
 type_uSBC="uSBC"
 type_A62="A62"
+type_A75="uQ7-J"
 
 type_cpu_q="QUAD"
 type_cpu_dl="DUAL_LITE"
@@ -153,7 +154,7 @@ main_view() {
 ddr_size_view() {
 	# open fd
 	exec 3>&1
-	VAL=(off off off off off)
+	VAL=(off off off off off off)
 	VAL[$MEM_SIZE]=on
 	# Store data to $VALUES variable
 	SELECTION=$(dialog --title "DDR configuration" \
@@ -167,6 +168,7 @@ ddr_size_view() {
 			2 "1Giga, bus size 64, active CS = 1 (256Mx4)" ${VAL[2]} \
 			3 "2Giga, bus size 64, active CS = 1 (512Mx4)" ${VAL[3]} \
  			4 "4Giga, bus size 64, active CS = 2 (512Mx8) - for QSEVEN only" ${VAL[4]} \
+			5 "256M,  bus size 32, active CS = 1 (256Mx1)" ${VAL[4]} \
 			2>&1 1>&3)
 	 
 	# close fd
@@ -182,12 +184,13 @@ ddr_size_view() {
 board_type_view() {
 	# open fd
 	exec 3>&1
-	VAL=(off off off off)
+	VAL=(off off off off off)
 	case "$BOARD" in
 			"$type_Qseven") VAL[0]=on;;
 		   	"$type_uQseven") VAL[1]=on;;
 			"$type_uSBC") VAL[2]=on;;
 			"$type_A62") VAL[3]=on;;
+			"$type_A75") VAL[4]=on;;
 	esac
 	# Store data to $VALUES variable
 	SELECTION=$(dialog --title "Board type" \
@@ -200,6 +203,7 @@ board_type_view() {
 			$type_uQseven "Micro Qseven board" ${VAL[1]} \
 			$type_uSBC "Micro Single board" ${VAL[2]} \
 			$type_A62 "A62 Single board" ${VAL[3]} \
+			$type_A75 "uQ7-J board" ${VAL[4]} \
 			2>&1 1>&3)
 	 
 	# close fd
@@ -414,6 +418,9 @@ function check_mem_size () {
 	elif [ "${MEM_SIZE}" == "4" ]; then
 		echo "RAM size selected: 4Giga, bus size 64, active CS = 2 (512Mx8) - for QSEVEN only"
 		SUFFIX=${SUFFIX}-4GB
+	elif [ "${MEM_SIZE}" == "5" ]; then
+		echo "RAM size selected: 256M, bus size 32, active CS = 1"
+		SUFFIX=${SUFFIX}-256MB
 	else
 		echo "ERROR: wrong DDR size selected"
 		exit 0
@@ -434,6 +441,9 @@ function check_board_type () {
 	elif [ "${BOARD}" == "${type_A62}" ]; then
                 echo "Board type selected: A62 Single Board"
                 SUFFIX=${SUFFIX}-a62
+	elif [ "${BOARD}" == "${type_A75}" ]; then
+                echo "Board type selected: A75 uQ7-J"
+                SUFFIX=${SUFFIX}-a75
 	else
 		echo "ERROR: wrong board type selected"
 		exit 0
@@ -495,6 +505,14 @@ function make_cpu_type () {
 		make mx6dl_SBC_A62_config
             elif [ "${CPU_TYPE}" == "${type_cpu_s}" ]; then
                 make mx6s_SBC_A62_config
+            fi
+        elif [ "${BOARD}" == "${type_A75}" ]; then
+            if [ "${CPU_TYPE}" == "${type_cpu_q}" ]; then
+                make mx6q_uq7-j_A75_config
+            elif [ "${CPU_TYPE}" == "${type_cpu_dl}" ]; then
+		make mx6dl_uq7-j_A75_config
+            elif [ "${CPU_TYPE}" == "${type_cpu_s}" ]; then
+                make mx6s_uq7-j_A75_config
             fi
         fi
 }

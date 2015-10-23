@@ -33,6 +33,7 @@
 
 
 /* Common Seco system environment */
+#define  DDR_SIZE_1x256   5
 #define  DDR_SIZE_2x256   0
 #define  DDR_SIZE_2x512   1
 #define  DDR_SIZE_4x256   2
@@ -52,6 +53,8 @@
 	#define CONFIG_DDR_MB 2048
 #elif ( DDR_SIZE_CONF == DDR_SIZE_8x512 )
 	#define CONFIG_DDR_MB 4096
+#elif ( DDR_SIZE_CONF == DDR_SIZE_1x256 )
+	#define CONFIG_DDR_MB 256
 #endif
 
 
@@ -458,7 +461,6 @@
 
 #define CONFIG_ENV_BOOTARG_BASE                                                                               \
 	"console_interface='console=" CONFIG_CONSOLE_DEV "," __stringify(CONFIG_BAUDRATE)"'\0"                \
-	"videomode=video=mxcfb0:dev=hdmi,1920x1080M@60\0"                                                     \
 	"bootargs_base="CONFIG_BOOTARGS_BASE"\0"   
 
 
@@ -467,32 +469,39 @@
         "kernel_partition="__stringify(CONFIG_SYS_MMC_IMG_LOAD_PART)"\0"                                                                    \
         "kernel_loadaddr="__stringify(CONFIG_LOADADDR)"\0"                                                                                  \
 	"kernel_file=zImage\0"                                                                                                              \
-	"kernel_load=mmc dev ${kernel_device_id}; fatload mmc ${kernel_device_id}:${kernel_partition} ${kernel_loadaddr} ${kernel_file}\0" 
+	"kernel_load=mmc dev ${kernel_device_id}; fatload mmc ${kernel_device_id}:${kernel_partition} ${kernel_loadaddr} ${kernel_file}\0"
 
 
-#define CONFIG_ENV_FDT                                                                                                      \
+#define CONFIG_ENV_FDT                                                                                                  \
 	"fdt_device_id="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0"                                                             \
-        "fdt_partition="__stringify(CONFIG_SYS_MMC_IMG_LOAD_PART)"\0"                                                       \
+        "fdt_partition="__stringify(CONFIG_SYS_MMC_IMG_LOAD_PART)"\0"                                                   \
 	"fdt_loadaddr="__stringify(CONFIG_FDT_LOADADDR)"\0"                                                                 \
 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0"                                                                            \
 	"fdt_high=0xffffffff\0"	                                                                                            \
-	"fdt_load=mmc dev ${fdt_device_id}; fatload mmc ${fdt_device_id}:${fdt_partition} ${fdt_loadaddr} ${fdt_file}\0"  
+	"fdt_load=mmc dev ${fdt_device_id}; fatload mmc ${fdt_device_id}:${fdt_partition} ${fdt_loadaddr} ${fdt_file}\0"
 
 
-#define CONFIG_ENV_ROOT                                                                                   \
+#define CONFIG_ENV_ROOT                                                                               \
 	"root_device_id="__stringify(CONFIG_ROOT_DEV_ID)"\0"                                              \
 	"root_partition="__stringify(CONFIG_ROOT_PARTITION)"\0"                                           \
 	"root_set_dev=setenv root_dev root=/dev/mmcblk${root_device_id}p${root_partition} rootwait rw\0"  \
 	"root_add_env=setenv bootargs ${bootargs} ${root_dev}\0"
-	
 
-#define CONFIG_CMD_SET_BOOT                                             \
+
+#define CONFIG_ENV_VIDEO                                          \
+	"video_lvds1=video=mxcfb1:dev=ldb,LDB-WVGA,if=RGB666\0"       \
+	"video_lvds2=video=mxcfb2:dev=ldb,LDB-WVGA,if=RGB666\0"       \
+	"video_hdmi=video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24\0"   \
+	"videomode=video=mxcfb0:dev=hdmi,1920x1080M@60\0"
+
+
+#define CONFIG_CMD_SET_BOOT                                         \
 	"run bootargs_base; "                                           \
 	"if test \"${run_from_nfs}\" = \"0\"; then "                    \
-		"echo Running in Normal Mode... ; "                     \
+		"echo Running in Normal Mode... ; "                         \
 	"else "                                                         \
-		"echo Running in Remote... ; "                          \
-		"run set_ip; "                                          \
+		"echo Running in Remote... ; "                              \
+		"run set_ip; "                                              \
 	"fi;"                                                           \
 	"run root_set_dev; "                                            \
 	"run root_add_env; "                                            \
@@ -501,14 +510,15 @@
 	"bootz ${kernel_loadaddr} - ${fdt_loadaddr}"
 
 
-#define CONFIG_EXTRA_ENV_SETTINGS               \
-	CONFIG_ENV_COMMON			\
+#define CONFIG_EXTRA_ENV_SETTINGS           \
+	CONFIG_ENV_COMMON                       \
 	CONFIG_ENV_BOOTARG_BASE                 \
 	CONFIG_ENV_KERNEL                       \
 	CONFIG_ENV_FDT                          \
 	CONFIG_ENV_ROOT                        	\
-	"bootcmd=" CONFIG_CMD_SET_BOOT "\0"	
-	
+	CONFIG_ENV_VIDEO                        \
+	"bootcmd=" CONFIG_CMD_SET_BOOT "\0"
+
 
 
 #endif     /* __MX6SECO_COMMON_CONFIG_H */

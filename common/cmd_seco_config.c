@@ -16,6 +16,7 @@
  */
 #include <common.h>
 #include <command.h>
+#include <environment.h> 
 #include <stdio_dev.h>
 
 #include <common.h>
@@ -64,8 +65,8 @@
 #define SAVE_FDT_PARTITION(x)          setenv ("fdt_partition", (x))
 #define SAVE_FDT_LOADADDR(x)           setenv ("fdt_loadaddr", (x))
 #define SAVE_FDT_PATH(x)               setenv ("fdt_file", (x))
-#define SAVE_FDT_SPI_ADDR(x)           setenv ("fdt_spi_addr", (x)) 
-#define SAVE_FDT_SPI_LEN(x)            setenv ("fdt_spi_len", (x)) 
+#define SAVE_FDT_SPI_ADDR(x)           setenv ("fdt_spi_addr", (x))
+#define SAVE_FDT_SPI_LEN(x)            setenv ("fdt_spi_len", (x))
 #define SAVE_FDT_BOOT_LOAD(x)          setenv ("fdt_load", (x))
 
 
@@ -103,8 +104,8 @@
 #define SAVE_KERNEL_PARTITION(x)          setenv ("kernel_partition", (x))
 #define SAVE_KERNEL_LOADADDR(x)           setenv ("kernel_loadaddr", (x))
 #define SAVE_KERNEL_PATH(x)               setenv ("kernel_file", (x))
-#define SAVE_KERNEL_SPI_ADDR(x)           setenv ("kernel_spi_addr", (x)) 
-#define SAVE_KERNEL_SPI_LEN(x)            setenv ("kernel_spi_len", (x)) 
+#define SAVE_KERNEL_SPI_ADDR(x)           setenv ("kernel_spi_addr", (x))
+#define SAVE_KERNEL_SPI_LEN(x)            setenv ("kernel_spi_len", (x))
 #define GET_ENV_KERNEL_SRC(srv)           ( ENV_KERNEL_SRC_ ## (src) )
 #define SAVE_KERNEL_BOOT_LOAD(x)          setenv ("kernel_load", (x))
 
@@ -123,13 +124,13 @@
 	"root=\'/dev/mmcblk${root_device_id}p${root_partition} "ENV_FS_COMMON"\'"
 
 #define ENV_FS_SRC_EXTSD    \
-	"root=\'/dev/mmcblk${root_device_id}p${root_partition} "ENV_FS_COMMON"\'"	
+	"root=\'/dev/mmcblk${root_device_id}p${root_partition} "ENV_FS_COMMON"\'"
 
 #define ENV_FS_SRC_SATA     \
-	"root=\'/dev/sda${root_partition} "ENV_FS_COMMON"\'"	
+	"root=\'/dev/sda${root_partition} "ENV_FS_COMMON"\'"
 
 #define ENV_FS_SRC_USB      \
-	"root=\'/dev/sda${root_partition} "ENV_FS_COMMON"\'"	
+	"root=\'/dev/sda${root_partition} "ENV_FS_COMMON"\'"
 
 #define ENV_FS_SRC_NFS      \
 	"root=\'/dev/nfs nfsroot=${nfs_ip_server}:${nfs_path} nolock,wsize=4096,rsize=4096 ip=${ip} "ENV_FS_COMMON"\'"
@@ -255,7 +256,7 @@ typedef struct data_boot_dev {
 
 #if defined(CONFIG_MX6Q_SECO_962) || defined(CONFIG_MX6DL_SECO_962)  || defined(CONFIG_MX6S_SECO_962)
 #define BOOT_DEV_ID_EMMC      __stringify(CONFIG_BOOT_ID_EMMC)"\0" 
-#define BOOT_DEV_ID_U_SD      "0" 
+#define BOOT_DEV_ID_U_SD      "0"
 #define BOOT_DEV_ID_EXT_SD    __stringify(CONFIG_BOOT_ID_EXT_SD)"\0"
 #define BOOT_DEV_ID_SPI       "0"
 #define BOOT_DEV_ID_SATA      "0"
@@ -281,6 +282,18 @@ typedef struct data_boot_dev {
 #endif
 
 
+#if defined(CONFIG_MX6Q_SECO_A75) || defined(CONFIG_MX6DL_SECO_A75)  || defined(CONFIG_MX6S_SECO_A75)
+#define BOOT_DEV_ID_EMMC      __stringify(CONFIG_BOOT_ID_EMMC)"\0" 
+#define BOOT_DEV_ID_U_SD      "0" 
+#define BOOT_DEV_ID_EXT_SD    __stringify(CONFIG_BOOT_ID_EXT_SD)"\0"
+#define BOOT_DEV_ID_SPI       "0"
+#define BOOT_DEV_ID_SATA      "0"
+#define BOOT_DEV_ID_USB       "0"
+
+#define ROOT_DEV_ID_EMMC      __stringify(CONFIG_ROOT_ID_EMMC)"\0"
+#define ROOT_DEV_ID_U_SD      "0"
+#define ROOT_DEV_ID_EXT_SD    __stringify(CONFIG_ROOT_ID_EXT_SD)"\0"
+#endif
 
 
 #define LOAD_ADDR_KERNEL_LOCAL_DEV    __stringify(CONFIG_LOADADDR)"\0"
@@ -415,6 +428,95 @@ static data_boot_dev_t filesystem_dev_list [] = {
 };
 #endif   /*  defined(CONFIG_MX6Q_SECO_A62) || defined(CONFIG_MX6DL_SECO_A62)  || defined(CONFIG_MX6S_SECO_A62)  */
 
+/*  __________________________________________________________________________
+ * |______________________________ uQ7_iMX6 (A75) ____________________________|
+ */
+#if defined(CONFIG_MX6Q_SECO_A75) || defined(CONFIG_MX6DL_SECO_A75)  || defined(CONFIG_MX6S_SECO_A75)
+static data_boot_dev_t kern_dev_list [] = {
+	{ DEV_EMMC,     "eMMC onboard",   ENV_KERNEL_SRC_MMC,    BOOT_DEV_ID_EMMC,    LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+	{ DEV_EXT_SD,   "external SD",    ENV_KERNEL_SRC_EXTSD,  BOOT_DEV_ID_EXT_SD,  LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+	{ DEV_SPI,      "SPI onboard",    ENV_KERNEL_SRC_SPI,    BOOT_DEV_ID_SPI,     LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+	{ DEV_TFTP,     "TFTP",           ENV_KERNEL_SRC_TFTP,   "",                  LOAD_ADDR_KERNEL_REMOTE_DEV,  "zImage" },
+	{ DEV_USB,      "USB",            ENV_KERNEL_SRC_USB,    BOOT_DEV_ID_USB,     LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+#ifdef CONFIG_MX6Q
+	{ DEV_SATA,     "SATA",           ENV_KERNEL_SRC_SATA,   BOOT_DEV_ID_SATA,    LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+#endif
+};
+
+
+static data_boot_dev_t fdt_dev_list [] = {
+	{ DEV_EMMC,     "eMMC onboard",   ENV_FDT_SRC_MMC,     BOOT_DEV_ID_EMMC,    LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
+	{ DEV_EXT_SD,   "external SD",    ENV_FDT_SRC_EXTSD,   BOOT_DEV_ID_EXT_SD,  LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
+	{ DEV_SPI,      "SPI onboard",    ENV_FDT_SRC_SPI,     BOOT_DEV_ID_SPI,     LOAD_ADDR_FDT_LOCAL_DEV,        ""  },
+	{ DEV_TFTP,     "TFTP",           ENV_FDT_SRC_TFTP,    "",                  LOAD_ADDR_FDT_REMOTE_DEV,  CONFIG_DEFAULT_FDT_FILE },
+	{ DEV_USB,      "USB",            ENV_FDT_SRC_USB,     BOOT_DEV_ID_USB,     LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
+#ifdef CONFIG_MX6Q
+	{ DEV_SATA,     "SATA",           ENV_FDT_SRC_SATA,    BOOT_DEV_ID_SATA,    LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
+#endif
+};
+
+
+static data_boot_dev_t filesystem_dev_list [] = {
+	{ DEV_EMMC,     "eMMC onboard",   ENV_FS_SRC_MMC,     ROOT_DEV_ID_EMMC,    "" },
+	{ DEV_EXT_SD,   "external SD",    ENV_FS_SRC_EXTSD,   ROOT_DEV_ID_EXT_SD,  "" },
+	{ DEV_NFS,      "NFS",            ENV_FS_SRC_NFS,     "",                  "" },
+	{ DEV_USB,      "USB",            ENV_FS_SRC_USB,     "",                  "" },
+	{ DEV_SATA,     "SATA",           ENV_FS_SRC_SATA,    "",                  "" },
+};
+#endif   /*  defined(CONFIG_MX6Q_SECO_A75) || defined(CONFIG_MX6DL_SECO_A75)  || defined(CONFIG_MX6S_SECO_A75)  */
+
+/*  __________________________________________________________________________
+ * |__________________________________________________________________________|
+ */
+
+/*  __________________________________________________________________________
+ * |                                                                          |
+ * |                            VIDEO SPECIFICATION                           |
+ * |__________________________________________________________________________|
+ */
+
+#define VIDEO_PRIMARY_HDMI   1
+#define VIDEO_PRIMARY_LVDS   2
+
+typedef struct video_mode {
+	char *label;
+	int fb_hdmi;
+	int fb_lvds1;
+	int fb_lvds2;
+	int primary;
+} video_mode_t;
+
+
+typedef struct lvds_video_spec {
+	char *label;
+	char *name;
+	char *if_map;
+	char *opt;
+	int  num_channel;
+} lvds_video_spec_t;
+
+
+static video_mode_t video_mode_list [] = {
+	{ "Primary LVDS Only",  -1,  0, -1, VIDEO_PRIMARY_LVDS },
+	{ "HDMI Only",           0, -1, -1, VIDEO_PRIMARY_HDMI },
+	{ "LVDS + HDMI",         1,  0, -1, VIDEO_PRIMARY_LVDS },
+	{ "HDMI + LVDS",         0,  1, -1, VIDEO_PRIMARY_HDMI },
+	{ "LVDS + LVDS",        -1,  0,  1, VIDEO_PRIMARY_LVDS },
+	{ "LVDS + LVDS + HDMI",  2,  0,  1, VIDEO_PRIMARY_LVDS },
+	{ "HDMI + LVDS + LVDS",  0,  1,  2, VIDEO_PRIMARY_HDMI },
+};
+
+
+static lvds_video_spec_t lvds_video_spec_list [] = {
+	{ "WVGA	  [800x480]",   "LDB-WVGA",    "RGB666", "",         1 },
+	{ "SVGA	  [800x600]",   "LDB-SVGA",    "RGB666", "",         1 },
+	{ "XGA	  [1024x768]",  "LDB-XGA",     "RGB666", "",         1 },
+	{ "WXGA	  [1368x768]",  "LDB-WXGA",    "RGB24",  "",         1 },
+	{ "SXGA	  [1280x1024]", "LDB-SXGA",    "RGB24",  "",         1 },
+	{ "HD1080 [1920x1080]", "LDB-1080P60", "RGB24",  "ldb=spl0", 2 },
+};
+
+
 
 /*  __________________________________________________________________________
  * |__________________________________________________________________________|
@@ -521,7 +623,7 @@ static char *getline (void) {
 void create_environment (const var_env_t *env_list, int num_element) {
 	int i;
 	for ( i = 0 ; i < num_element ; i++ ) {
-		setenv (env_list[i].name, env_list[i].data);		
+		setenv (env_list[i].name, env_list[i].data);
 	}
 }
 
@@ -534,17 +636,16 @@ void create_environment (const var_env_t *env_list, int num_element) {
  */
 char *do_ramsize (ulong min, ulong max) {
 	char *line;
-	do {
-		printf ("Chose the ram memory size to dedicate to the Kernel.\n");
+	do {printf ("\n __________________________________________________");
+		printf ("\n       Chose Kernel RAM size to allocate\n");
+		printf (" __________________________________________________\n");
 		printf ("[min size: %luM - max size %luM]\n", min, max);
 		printf ("> ");
-		line = getline ();	
+		line = getline ();
 	}while ((ulong)atoi(line) < min || (ulong)atoi(line) > max);
 	printf ("Will use %luM of RAM memory\n",(ulong)atoi(line));
 	return line;
 }
-
-
 
 
 
@@ -760,13 +861,13 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 	} while (ch != 'y' && ch != 'n');
 	if (ch == 'y') {
 		*dhcp_set = 1;
-		printf ("\nYou have select to use dynamic ip\n"); 
+		printf ("\nYou have select to use dynamic ip\n");
 	} else {
 		*dhcp_set = 0;
-		printf ("\nYou have select to use static ip\n"); 
+		printf ("\nYou have select to use static ip\n");
 	}
 
-	
+
 	/*  Set HOST IP  */
 	do {
 		pstr = GET_IP_SERVER;
@@ -775,7 +876,7 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 			pstr = &str[0];
 		}
 
-		printf ("Insert the address ip of the host machine (enter for current: %s)\n", 
+		printf ("Insert the address ip of the host machine (enter for current: %s)\n",
 				pstr);
 		printf ("> ");
 		line = getline ();
@@ -785,7 +886,7 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 
 
 	/* Set the NFS Path  */
-	do {	
+	do {
 		pstr = GET_NFS_PATH;
 		if ( pstr == NULL ) {
 			strcpy (str, DEF_NFS_PATH);
@@ -809,7 +910,7 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 				strcpy (str, DEF_IP_LOCAL);
 				pstr = &str[0];
 			}
-			
+
 			printf ("Insert an address ip for this board (enter for current: %s)\n",
 					 pstr);
 			printf ("> ");
@@ -818,7 +919,7 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 		} while (0);
 		strcpy (ip_local, strcmp (line, "") == 0 ? pstr : line);
 
-	
+
 		/* set NETMASK of the CLIENT  */
 		do {
 			pstr = GET_NETMASK;
@@ -838,12 +939,11 @@ void select_nfs_parameters (char *ip_local, char *ip_server, char *nfs_path, cha
 
 }
 
-
 int select_filesystem_souce (char *partition_id, char *nfs_path, 
 			char *serverip_nfs , char *ipaddr_nfs, char *netmask_nfs, int *use_dhcp) {
 
 	int dev_selected = selection_dev ("FileSystem", filesystem_dev_list, ARRAY_SIZE(filesystem_dev_list));
-	
+
 	switch ( filesystem_dev_list[dev_selected].dev_type ) {
 		case DEV_EMMC:
 		case DEV_U_SD:
@@ -863,8 +963,73 @@ int select_filesystem_souce (char *partition_id, char *nfs_path,
 }
 
 
+/*  __________________________________________________________________________
+ * |                                                                          |
+ * |                         VIDEO Settings Selection                         |
+ * |__________________________________________________________________________|
+ */
 
-	
+
+int selection_video_mode (video_mode_t  video_mode_list[], int num_element) {
+	char ch;
+	int i, selection = 0;
+
+	do {
+		printf ("\n __________________________________________________");
+		printf ("\n               Chose Video Setting.\n");
+		printf (" __________________________________________________\n");
+		for ( i = 0 ; i < num_element ; i++ ) {
+			printf ("%d) %s\n", i+1, video_mode_list[i].label);
+		}
+		printf ("> ");
+		ch = getc ();
+		printf ("%c\n", ch);
+	} while ((ctoi(ch) < 1) || (ctoi(ch) > num_element));
+
+	selection = ctoi(ch) - 1;
+
+	return selection;
+}
+
+
+int selection_lvds_spec (char *scope, lvds_video_spec_t  video_list[], int num_element) {
+	char ch;
+	int i, selection = 0;
+
+	do {
+		printf ("\n __________________________________________________");
+		printf ("\n        Chose LVDS resolution for %s.\n", scope);
+		printf (" __________________________________________________\n");
+		for ( i = 0 ; i < num_element ; i++ ) {
+			printf ("%d) %s\n", i+1, video_list[i].label);
+		}
+		printf ("> ");
+		ch = getc ();
+		printf ("%c\n", ch);
+	} while ((ctoi(ch) < 1) || (ctoi(ch) > num_element));
+
+	selection = ctoi(ch) - 1;
+
+	return selection;
+}
+
+
+int create_lvds_video_args (char *video_args, int list_idx, int fb_idx,
+			lvds_video_spec_t  video_list[], int num_element) {
+
+	if ( (list_idx < 0) && (list_idx > (num_element - 1)) )
+			return -1;
+
+	sprintf (video_args, "video=mxcfb%d:dev=ldb,%s,if=%s %s",
+			fb_idx, lvds_video_spec_list[list_idx].name,
+			lvds_video_spec_list[list_idx].if_map,
+			lvds_video_spec_list[list_idx].opt);
+	return 0;
+}
+
+
+
+
 static int do_seco_config (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]) {
 
 	/* generic  */
@@ -872,21 +1037,31 @@ static int do_seco_config (cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 	char serverip_tftp[25];
 	char ipaddr_tftp[25];
 
+	int set_memory = 0;
+	int set_kernel = 0;
+	int set_fdt = 0;
+	int set_filesystem = 0;
+	int set_video = 0;
+
+	/*  memory RAM  */
+	ulong min_size = 512;
+	ulong max_size;
+	char memory_buff[50];
+	char *line;
+
 	/*  for kernel  */
 	int kernel_selected_device;
 	char kernel_part_id[2];
 	char kernel_filename[100];
 	char kernel_spi_load_address[20];
 	char kernel_spi_load_length[20];
-	char kernel_boot_string[300];
-	
+
 	/*  for fdt  */
 	int fdt_selected_device;
 	char fdt_part_id[2];
 	char fdt_filename[100];
 	char fdt_spi_load_address[20];
 	char fdt_spi_load_length[20];
-	char fdt_boot_string[300];
 
 	/*  for filesystem  */
 	int filesystem_selected_device;
@@ -898,140 +1073,269 @@ static int do_seco_config (cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 	char filesystem_path_nfs[100];
 	char filesystem_boot_string[300];
 
+	/*  for video  */
+	int video_mode_selection;
+	int video_lvds1_selection;
+	int video_lvds2_selection;
+	char video_hdmi_video[80];
+	char video_lvds1_video[80];
+	char video_lvds2_video[80];
+	char video_mode[300];
+
+
+	if (argc > 2)
+		return cmd_usage (cmdtp);
+
+
+	if (argc == 2 && strcmp(argv[1], "help") == 0)
+		return cmd_usage (cmdtp);
+
+
+	if (argc == 2) {
+
+		if (strcmp(argv[1], "default") == 0) {
+			set_default_env ("## Resetting to default environment");
+		}
+
+		if (strcmp(argv[1], "memory") == 0) {
+			set_memory = 1;
+		}
+
+		if (strcmp(argv[1], "ksrc") == 0) {
+			set_kernel = 1;
+		}
+
+		if (strcmp(argv[1], "fdtsrc") == 0) {
+			set_fdt = 1;
+		}
+
+		if (strcmp(argv[1], "fssrc") == 0) {
+			set_filesystem = 1;
+		}
+
+		if (strcmp(argv[1], "video") == 0) {
+			set_video = 1;
+		}
+
+	}
+
+
+	if (argc == 1) {
+		set_memory = 1;
+		set_kernel = 1;
+		set_fdt = 1;
+		set_filesystem = 1;
+		set_video = 1;
+	}
+
+
+/*  __________________________________________________________________________
+ * |______________________________ MEMORY RAM ________________________________|
+ */
+	if ( set_memory ) {
+		ulong size = PHYS_SDRAM_SIZE;
+		max_size = size / (1 << 20); // get size in MB
+		if (max_size > 2100)
+			max_size = 3800;
+		line = do_ramsize (min_size, max_size);
+		sprintf (memory_buff, "mem=%sM", line);
+		setenv ("memory", memory_buff);
+	}
 
 /*  __________________________________________________________________________
  * |________________________________ KERNEL __________________________________|
  */
-	kernel_selected_device = select_kernel_source (kernel_part_id, 
-			kernel_filename, kernel_spi_load_address, 
-			kernel_spi_load_length, &use_tftp);
+	if ( set_kernel) {
+		kernel_selected_device = select_kernel_source (kernel_part_id,
+				kernel_filename, kernel_spi_load_address,
+				kernel_spi_load_length, &use_tftp);
 
-	SAVE_KERNEL_DEVICE_ID(kern_dev_list[kernel_selected_device].device_id);
-	SAVE_KERNEL_LOADADDR(kern_dev_list[kernel_selected_device].load_address);
+		SAVE_KERNEL_DEVICE_ID(kern_dev_list[kernel_selected_device].device_id);
+		SAVE_KERNEL_LOADADDR(kern_dev_list[kernel_selected_device].load_address);
 
-	if ( kern_dev_list[kernel_selected_device].dev_type != DEV_TFTP ) {
-		SAVE_KERNEL_PATH(kernel_filename);
+		if ( kern_dev_list[kernel_selected_device].dev_type != DEV_TFTP ) {
+			SAVE_KERNEL_PATH(kernel_filename);
+		}
+
+		switch (kern_dev_list[kernel_selected_device].dev_type) {
+			case DEV_EMMC:
+			case DEV_U_SD:
+			case DEV_EXT_SD:
+			case DEV_SATA:
+			case DEV_USB:
+				SAVE_KERNEL_PARTITION(kernel_part_id);
+				break;
+			case DEV_SPI:
+				SAVE_KERNEL_SPI_ADDR(kernel_spi_load_address);
+				SAVE_KERNEL_SPI_LEN(kernel_spi_load_length);
+				break;
+			case DEV_TFTP:
+				break;
+			default:
+				break;
+		}
+
+		SAVE_KERNEL_BOOT_LOAD(kern_dev_list[kernel_selected_device].env_str);
 	}
-	
-	switch (kern_dev_list[kernel_selected_device].dev_type) {
-		case DEV_EMMC:
-		case DEV_U_SD:
-		case DEV_EXT_SD:
-		case DEV_SATA:
-		case DEV_USB:
-			SAVE_KERNEL_PARTITION(kernel_part_id);
-			break;
-		case DEV_SPI:
-			SAVE_KERNEL_SPI_ADDR(kernel_spi_load_address);
-			SAVE_KERNEL_SPI_LEN(kernel_spi_load_length);
-			break;
-		case DEV_TFTP:
-			break;
-		default:
-			break;
-	}
-
-	SAVE_KERNEL_BOOT_LOAD(kern_dev_list[kernel_selected_device].env_str);
-
 
 /*  __________________________________________________________________________
  * |__________________________________ FDT ___________________________________|
 */
-	fdt_selected_device = select_fdt_source (fdt_part_id, 
-			fdt_filename, fdt_spi_load_address, 
-			fdt_spi_load_length, &use_tftp); 
+	if ( set_fdt ) {
+		fdt_selected_device = select_fdt_source (fdt_part_id,
+				fdt_filename, fdt_spi_load_address,
+				fdt_spi_load_length, &use_tftp);
 
-	SAVE_FDT_DEVICE_ID(fdt_dev_list[fdt_selected_device].device_id);
-	SAVE_FDT_LOADADDR(fdt_dev_list[fdt_selected_device].load_address);
+		SAVE_FDT_DEVICE_ID(fdt_dev_list[fdt_selected_device].device_id);
+		SAVE_FDT_LOADADDR(fdt_dev_list[fdt_selected_device].load_address);
 
-	if ( fdt_dev_list[fdt_selected_device].dev_type != DEV_TFTP ) {
-		SAVE_FDT_PATH(fdt_filename);
+		if ( fdt_dev_list[fdt_selected_device].dev_type != DEV_TFTP ) {
+			SAVE_FDT_PATH(fdt_filename);
+		}
+
+		switch (fdt_dev_list[fdt_selected_device].dev_type) {
+			case DEV_EMMC:
+			case DEV_U_SD:
+			case DEV_EXT_SD:
+			case DEV_SATA:
+			case DEV_USB:
+				SAVE_FDT_PARTITION(fdt_part_id);
+				break;
+			case DEV_SPI:
+				SAVE_FDT_SPI_ADDR(fdt_spi_load_address);
+				SAVE_FDT_SPI_LEN(fdt_spi_load_length);
+				break;
+			case DEV_TFTP:
+				break;
+			default:
+				break;
+		}
+
+		SAVE_FDT_BOOT_LOAD(fdt_dev_list[fdt_selected_device].env_str);
 	}
-	
-	switch (fdt_dev_list[fdt_selected_device].dev_type) {
-		case DEV_EMMC:
-		case DEV_U_SD:
-		case DEV_EXT_SD:
-		case DEV_SATA:
-		case DEV_USB:
-			SAVE_FDT_PARTITION(fdt_part_id);
-			break;
-		case DEV_SPI:
-			SAVE_FDT_SPI_ADDR(fdt_spi_load_address);
-			SAVE_FDT_SPI_LEN(fdt_spi_load_length);
-			break;
-		case DEV_TFTP:
-			break;
-		default:
-			break;
-	}
-
-	SAVE_FDT_BOOT_LOAD(fdt_dev_list[fdt_selected_device].env_str);
-
 
 /*  __________________________________________________________________________
  * |_______________________________ NET OF TFTP ______________________________|
  */
-	if ( use_tftp ) {
-		select_tftp_parameters (serverip_tftp , ipaddr_tftp);
-		setenv ("serverip", serverip_tftp);
-		setenv ("ipaddr", ipaddr_tftp);
+	if ( set_kernel || set_fdt ) {
+		if ( use_tftp ) {
+			select_tftp_parameters (serverip_tftp , ipaddr_tftp);
+			setenv ("serverip", serverip_tftp);
+			setenv ("ipaddr", ipaddr_tftp);
+		}
 	}
-	
 
 /*  __________________________________________________________________________
  * |______________________________ FILE SYSTEM _______________________________|
-*/
-	filesystem_selected_device = select_filesystem_souce (filesystem_part_id,
-			filesystem_path_nfs, filesystem_server_nfs, filesystem_ipaddr_nfs,
-			filesystem_netmask_nfs, &filesystem_use_dhcp);
+ */
+	if ( set_filesystem ) {
+		filesystem_selected_device = select_filesystem_souce (filesystem_part_id,
+				filesystem_path_nfs, filesystem_server_nfs, filesystem_ipaddr_nfs,
+				filesystem_netmask_nfs, &filesystem_use_dhcp);
 
-	switch (filesystem_dev_list[filesystem_selected_device].dev_type) {
-		case DEV_EMMC:
-		case DEV_U_SD:
-		case DEV_EXT_SD:
-			SAVE_FILESYSTEM_DEVICE_ID(filesystem_dev_list[filesystem_selected_device].device_id);
-			SAVE_FILESYSTEM_PARTITION(filesystem_part_id);
-			break;
-		case DEV_SATA:
-		case DEV_USB:
-			SAVE_FILESYSTEM_PARTITION(filesystem_part_id);
-			break;
-		case DEV_SPI:
-			SAVE_FDT_SPI_ADDR(fdt_spi_load_address);
-			SAVE_FDT_SPI_LEN(fdt_spi_load_length);
-			break;
-		case DEV_NFS:
-			SAVE_NFS_USE("1");
-			SAVE_NFS_IP_CLIENT(filesystem_ipaddr_nfs);
-			SAVE_NFS_IP_SERVER(filesystem_server_nfs);
-			SAVE_NFS_NETMASK(filesystem_netmask_nfs);
-			SAVE_NFS_PATH(filesystem_path_nfs);
-			if ( filesystem_use_dhcp == 1 ) {
-				SAVE_NFS_USE_DHCP("1");
-			} else {
-				SAVE_NFS_USE_DHCP("0");
-			}
-			printf ("--- %s   %s   %s    %s\n", filesystem_path_nfs, filesystem_server_nfs, filesystem_ipaddr_nfs, filesystem_netmask_nfs);
-			break;
-		case DEV_TFTP:
-			break;
-		default:
-			break;
+		switch (filesystem_dev_list[filesystem_selected_device].dev_type) {
+			case DEV_EMMC:
+			case DEV_U_SD:
+			case DEV_EXT_SD:
+				SAVE_FILESYSTEM_DEVICE_ID(filesystem_dev_list[filesystem_selected_device].device_id);
+				SAVE_FILESYSTEM_PARTITION(filesystem_part_id);
+				break;
+			case DEV_SATA:
+			case DEV_USB:
+				SAVE_FILESYSTEM_PARTITION(filesystem_part_id);
+				break;
+			case DEV_SPI:
+				SAVE_FDT_SPI_ADDR(fdt_spi_load_address);
+				SAVE_FDT_SPI_LEN(fdt_spi_load_length);
+				break;
+			case DEV_NFS:
+				SAVE_NFS_USE("1");
+				SAVE_NFS_IP_CLIENT(filesystem_ipaddr_nfs);
+				SAVE_NFS_IP_SERVER(filesystem_server_nfs);
+				SAVE_NFS_NETMASK(filesystem_netmask_nfs);
+				SAVE_NFS_PATH(filesystem_path_nfs);
+				if ( filesystem_use_dhcp == 1 ) {
+					SAVE_NFS_USE_DHCP("1");
+				} else {
+					SAVE_NFS_USE_DHCP("0");
+				}
+				printf ("--- %s   %s   %s    %s\n", filesystem_path_nfs, filesystem_server_nfs, filesystem_ipaddr_nfs, filesystem_netmask_nfs);
+				break;
+			case DEV_TFTP:
+				break;
+			default:
+				break;
+		}
+
+		if ( filesystem_dev_list[filesystem_selected_device].dev_type != DEV_NFS )
+			SAVE_NFS_USE("0");
+
+		sprintf (filesystem_boot_string, "setenv root_dev \'%s\'",
+				filesystem_dev_list[filesystem_selected_device].env_str);
+
+		SAVE_FILESYSTEM_ROOT(filesystem_boot_string);
 	}
 
-	if ( filesystem_dev_list[filesystem_selected_device].dev_type != DEV_NFS )
-		SAVE_NFS_USE("0");
+	/*  __________________________________________________________________________
+	 * |_____________________________ VIDEO SETTING ______________________________|
+	 */
+	if ( set_video ) {
+		video_mode_selection = selection_video_mode (video_mode_list,
+				ARRAY_SIZE(video_mode_list));
 
-	sprintf (filesystem_boot_string, "setenv root_dev \'%s\'",
-			filesystem_dev_list[filesystem_selected_device].env_str);
+		if ( video_mode_list[video_mode_selection].fb_hdmi >= 0 ) {
+			sprintf (video_hdmi_video, "video=mxcfb%d:dev=hdmi,1920x1080M@60,if=RGB24",
+					video_mode_list[video_mode_selection].fb_hdmi);
+		} else
+			sprintf (video_hdmi_video, " ");
 
-	SAVE_FILESYSTEM_ROOT(filesystem_boot_string);
-	
+
+		if ( video_mode_list[video_mode_selection].fb_lvds1 >= 0 ) {
+			video_lvds1_selection = selection_lvds_spec ("LVDS1",
+					lvds_video_spec_list, ARRAY_SIZE(lvds_video_spec_list));
+
+			create_lvds_video_args (video_lvds1_video, video_lvds1_selection,
+					video_mode_list[video_mode_selection].fb_lvds1,
+					lvds_video_spec_list, ARRAY_SIZE(lvds_video_spec_list));
+		} else
+			sprintf (video_lvds1_video, " ");
+
+
+		if ( video_mode_list[video_mode_selection].fb_lvds2 >= 0 ) {
+			video_lvds2_selection = selection_lvds_spec ("LVDS2",
+					lvds_video_spec_list, ARRAY_SIZE(lvds_video_spec_list));
+
+			create_lvds_video_args (video_lvds2_video, video_lvds2_selection,
+					video_mode_list[video_mode_selection].fb_lvds2,
+					lvds_video_spec_list, ARRAY_SIZE(lvds_video_spec_list));
+		} else
+			sprintf (video_lvds2_video, " ");
+
+
+		sprintf (video_mode, "%s %s %s", video_hdmi_video, video_lvds1_video,
+				video_lvds2_video);
+
+		if ( strcmp (video_hdmi_video, " ") ) {
+			setenv ("video_hdmi", video_hdmi_video);
+		}
+
+		if ( strcmp (video_lvds1_video, " ") ) {
+			setenv ("video_lvds1", video_lvds1_video);
+		}
+
+		if ( strcmp (video_lvds2_video, " ") ) {
+			setenv ("video_lvds2", video_lvds2_video);
+		}
+
+		setenv ("videomode", video_mode);
+	}
+
+/*  __________________________________________________________________________
+ * |__________________________________________________________________________|
+*/
+
 	create_environment (env_base, ARRAY_SIZE(env_base));
 
-
-	
 	printf ("\n\n");
 	saveenv ();
 	printf ("\n\n");
@@ -1044,6 +1348,12 @@ static int do_seco_config (cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 
 U_BOOT_CMD(
 	seco_config, 3, 1, do_seco_config,
-	"Interactive setup for seco q7 configuration.",
-	"           - set whole environment\n"
+	"Interactive setup for seco configuration.",
+	"          - set whole environment\n"
+	"seco_config [default] - resetting to default environment\n"
+	"seco_config [memory]  - set kernel RAM size.\n"
+	"seco_config [ksrc]    - set Kernel source device.\n"
+	"seco_config [fdtsrc]  - set FDT source device.\n"
+	"seco_config [fssrc]   - set FileSystem source device.\n"
+	"seco_config [video]   - set video usage mode\n"
 );

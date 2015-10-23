@@ -20,6 +20,11 @@
 #define MII_KSZ9031_EXT_RGMII_TX_DATA_SKEW	0x6
 #define MII_KSZ9031_EXT_RGMII_CLOCK_SKEW	0x8
 
+#define MII_KSZ8091_EXT_RMII_CTRL_SIG_SKEW      0x4
+#define MII_KSZ8091_EXT_RMII_RX_DATA_SKEW       0x5
+#define MII_KSZ8091_EXT_RMII_TX_DATA_SKEW       0x6
+#define MII_KSZ8091_EXT_RMII_CLOCK_SKEW         0x8
+
 struct phy_device;
 int ksz9021_phy_extended_write(struct phy_device *phydev, int regnum, u16 val);
 int ksz9021_phy_extended_read(struct phy_device *phydev, int regnum);
@@ -28,5 +33,11 @@ int ksz9031_phy_extended_write(struct phy_device *phydev, int devaddr,
 			       int regnum, u16 mode, u16 val);
 int ksz9031_phy_extended_read(struct phy_device *phydev, int devaddr,
 			      int regnum, u16 mode);
+
+int kszi8091_phy_extended_write(struct phy_device *phydev, int devaddr,
+			       int regnum, u16 mode, u16 val);
+int ksz8091_phy_extended_read(struct phy_device *phydev, int devaddr,
+			      int regnum, u16 mode);
+
 
 #endif

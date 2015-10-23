@@ -51,6 +51,10 @@ int board_mmc_init (bd_t *bis) {
 				gpio_direction_input (usdhc_list[index].gpio_cd);
 			}
 
+			if ( usdhc_list[index].gpio_pwr > 0 ) {
+				gpio_direction_output (usdhc_list[index].gpio_pwr, 0);
+			}
+
 			status != fsl_esdhc_initialize (bis, &usdhc_cfg[index]);
 
 			if ( status )

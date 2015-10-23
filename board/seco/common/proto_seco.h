@@ -39,6 +39,7 @@ struct usdhc_l {
 	iomux_v3_cfg_t const *pad;
 	int num;
 	int gpio_cd;
+	int gpio_pwr;
 };
 
 extern struct fsl_esdhc_cfg usdhc_cfg[CONFIG_SYS_FSL_USDHC_NUM];

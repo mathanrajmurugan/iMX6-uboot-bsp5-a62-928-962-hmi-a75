@@ -204,14 +204,80 @@ static int ksz9031_phy_extwrite(struct phy_device *phydev, int addr,
 static struct phy_driver ksz9031_driver = {
 	.name = "Micrel ksz9031",
 	.uid  = 0x221620,
-	.mask = 0xfffff0,
+	.mask = 0xfffffe,
+#ifndef CONFIG_KSZ9031_FIX_100MB
 	.features = PHY_GBIT_FEATURES,
+#else
+	.features = PHY_BASIC_FEATURES,
+#endif
 	.config   = &genphy_config,
 	.startup  = &ksz90xx_startup,
 	.shutdown = &genphy_shutdown,
 	.writeext = &ksz9031_phy_extwrite,
 	.readext = &ksz9031_phy_extread,
 };
+
+/*
+ * KSZ8091
+ */
+
+#define MII_KSZ80xx_PHY_CTL1		0x1E
+#define MII_KSZ80xx_PHY_CTL2		0x1F
+
+#define MIIM_KSZ80xx_GET_OP_MODE(x)     ((x) & 0x0007)
+
+#define MIIM_KSZ80xx_OP_MODE_10_HALF    0x001
+#define MIIM_KSZ80xx_OP_MODE_100_HALF   0x010
+#define MIIM_KSZ80xx_OP_MODE_10_FULL    0x101
+#define MIIM_KSZ80xx_OP_MODE_100_FULL   0x110
+
+static int ksz80xx_startup (struct phy_device *phydev) {
+	unsigned phy_ctl1;
+
+	genphy_update_link (phydev);
+	phy_ctl1 = phy_read (phydev, MDIO_DEVAD_NONE, MII_KSZ80xx_PHY_CTL1);
+
+	switch (MIIM_KSZ80xx_GET_OP_MODE(phy_ctl1)) {
+		case MIIM_KSZ80xx_OP_MODE_10_HALF:
+		case MIIM_KSZ80xx_OP_MODE_100_HALF:
+			phydev->duplex = DUPLEX_HALF;
+			break;
+		case MIIM_KSZ80xx_OP_MODE_10_FULL:
+		case MIIM_KSZ80xx_OP_MODE_100_FULL:
+			phydev->duplex = DUPLEX_FULL;
+			break;
+		default:
+			phydev->duplex = DUPLEX_HALF;
+			break;
+	}
+
+	switch (MIIM_KSZ80xx_GET_OP_MODE(phy_ctl1)) {
+		case MIIM_KSZ80xx_OP_MODE_10_HALF:
+		case MIIM_KSZ80xx_OP_MODE_10_FULL:
+			phydev->speed = SPEED_10;
+			break;
+		case MIIM_KSZ80xx_OP_MODE_100_HALF:
+		case MIIM_KSZ80xx_OP_MODE_100_FULL:
+			phydev->speed = SPEED_100;
+			break;
+		default:
+			phydev->speed = SPEED_10;
+			break;
+	}
+	
+	return 0;
+}
+
+static struct phy_driver ksz8091_driver = {
+	.name = "Micrel ksz8091",
+	.uid  = 0x221560,
+	.mask = 0xfffffe,
+	.features = PHY_BASIC_FEATURES,
+	.config = &genphy_config,
+	.startup = &genphy_startup,
+	.shutdown = &genphy_shutdown,
+};
+
 
 int phy_micrel_init(void)
 {
@@ -222,5 +288,6 @@ int phy_micrel_init(void)
 	phy_register(&KS8721_driver);
 #endif
 	phy_register(&ksz9031_driver);
+	phy_register(&ksz8091_driver);
 	return 0;
 }
