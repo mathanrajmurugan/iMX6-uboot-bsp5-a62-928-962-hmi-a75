@@ -183,8 +183,8 @@
 #define CONFIG_BOOT_ID_EMMC     0
 #define CONFIG_BOOT_ID_USD      1
 
-#define CONFIG_ROOT_ID_EMMC     3
-#define CONFIG_ROOT_ID_USD      2
+#define CONFIG_ROOT_ID_EMMC     0
+#define CONFIG_ROOT_ID_USD      1
 
 
 #define CONFIG_MMCROOT			"/dev/mmcblk0p3"  /* SDHC4 */

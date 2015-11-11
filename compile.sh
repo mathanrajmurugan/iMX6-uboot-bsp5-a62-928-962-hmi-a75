@@ -168,7 +168,7 @@ ddr_size_view() {
 			2 "1Giga, bus size 64, active CS = 1 (256Mx4)" ${VAL[2]} \
 			3 "2Giga, bus size 64, active CS = 1 (512Mx4)" ${VAL[3]} \
  			4 "4Giga, bus size 64, active CS = 2 (512Mx8) - for QSEVEN only" ${VAL[4]} \
-			5 "256M,  bus size 32, active CS = 1 (256Mx1)" ${VAL[4]} \
+			5 "256M,  bus size 32, active CS = 1 (256Mx1)" ${VAL[5]} \
 			2>&1 1>&3)
 	 
 	# close fd

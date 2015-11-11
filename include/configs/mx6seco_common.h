@@ -197,6 +197,11 @@
 	#define PHYS_SDRAM_SIZE        (4u * 1024 * 1024 * 1024 - 256u * 1024 * 1024)
 #endif
 
+#if (CONFIG_DDR_SIZE == 5)
+	#define PHYS_SDRAM_SIZE        (256u * 1024 * 1024)
+#endif
+
+
 #define CONFIG_SYS_INIT_SP_OFFSET \
 	(CONFIG_SYS_INIT_RAM_SIZE - GENERATED_GBL_DATA_SIZE)
 #define CONFIG_SYS_INIT_SP_ADDR \
