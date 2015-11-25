@@ -181,7 +181,7 @@
 
 
 #define CONFIG_BOOT_ID_EMMC     0
-#define CONFIG_BOOT_ID_USD      1
+#define CONFIG_BOOT_ID_EXT_SD      1
 
 #define CONFIG_ROOT_ID_EMMC     0
 #define CONFIG_ROOT_ID_USD      1

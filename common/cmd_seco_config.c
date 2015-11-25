@@ -270,8 +270,8 @@ typedef struct data_boot_dev {
 
 #if defined(CONFIG_MX6Q_SECO_A62) || defined(CONFIG_MX6DL_SECO_A62)  || defined(CONFIG_MX6S_SECO_A62)
 #define BOOT_DEV_ID_EMMC      __stringify(CONFIG_BOOT_ID_EMMC)"\0" 
-#define BOOT_DEV_ID_U_SD      __stringify(CONFIG_BOOT_ID_USD)"\0" 
-#define BOOT_DEV_ID_EXT_SD    "0"
+#define BOOT_DEV_ID_U_SD      "0" 
+#define BOOT_DEV_ID_EXT_SD    __stringify(CONFIG_BOOT_ID_EXT_SD)"\0"
 #define BOOT_DEV_ID_SPI       "0"
 #define BOOT_DEV_ID_SATA      "0"
 #define BOOT_DEV_ID_USB       "0"
