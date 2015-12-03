@@ -397,7 +397,7 @@ static data_boot_dev_t filesystem_dev_list [] = {
 #if defined(CONFIG_MX6Q_SECO_A62) || defined(CONFIG_MX6DL_SECO_A62)  || defined(CONFIG_MX6S_SECO_A62)
 static data_boot_dev_t kern_dev_list [] = {
 	{ DEV_EMMC,     "eMMC onboard",   ENV_KERNEL_SRC_MMC,    BOOT_DEV_ID_EMMC,    LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
-	{ DEV_U_SD,     "uSD onboard",    ENV_KERNEL_SRC_USD,    BOOT_DEV_ID_U_SD,    LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
+	{ DEV_EXT_SD,   "external SD",  ENV_KERNEL_SRC_USD,    BOOT_DEV_ID_EXT_SD,  LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
 	{ DEV_SPI,      "SPI onboard",    ENV_KERNEL_SRC_SPI,    BOOT_DEV_ID_SPI,     LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
 	{ DEV_TFTP,     "TFTP",           ENV_KERNEL_SRC_TFTP,   "",                  LOAD_ADDR_KERNEL_REMOTE_DEV,  "zImage" },
 	{ DEV_USB,      "USB",            ENV_KERNEL_SRC_USB,    BOOT_DEV_ID_USB,     LOAD_ADDR_KERNEL_LOCAL_DEV,   "zImage" },
@@ -409,7 +409,7 @@ static data_boot_dev_t kern_dev_list [] = {
 
 static data_boot_dev_t fdt_dev_list [] = {
 	{ DEV_EMMC,     "eMMC onboard",   ENV_FDT_SRC_MMC,     BOOT_DEV_ID_EMMC,    LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
-	{ DEV_U_SD,     "uSD onboard",    ENV_FDT_SRC_USD,     BOOT_DEV_ID_U_SD,    LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
+	{ DEV_EXT_SD,   "external SD",    ENV_FDT_SRC_USD,     BOOT_DEV_ID_EXT_SD,  LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
 	{ DEV_SPI,      "SPI onboard",    ENV_FDT_SRC_SPI,     BOOT_DEV_ID_SPI,     LOAD_ADDR_FDT_LOCAL_DEV,        ""  },
 	{ DEV_TFTP,     "TFTP",           ENV_FDT_SRC_TFTP,    "",                  LOAD_ADDR_FDT_REMOTE_DEV,  CONFIG_DEFAULT_FDT_FILE },
 	{ DEV_USB,      "USB",            ENV_FDT_SRC_USB,     BOOT_DEV_ID_USB,     LOAD_ADDR_FDT_LOCAL_DEV,   CONFIG_DEFAULT_FDT_FILE },
@@ -421,7 +421,7 @@ static data_boot_dev_t fdt_dev_list [] = {
 
 static data_boot_dev_t filesystem_dev_list [] = {
 	{ DEV_EMMC,     "eMMC onboard",   ENV_FS_SRC_MMC,     ROOT_DEV_ID_EMMC,    "" },
-	{ DEV_U_SD,     "uSD onboard",    ENV_FS_SRC_USD,     ROOT_DEV_ID_U_SD,    "" },
+	{ DEV_U_SD,     "external SD",    ENV_FS_SRC_USD,     ROOT_DEV_ID_U_SD,    "" },
 	{ DEV_NFS,      "NFS",            ENV_FS_SRC_NFS,     "",                  "" },
 	{ DEV_USB,      "USB",            ENV_FS_SRC_USB,     "",                  "" },
 	{ DEV_SATA,     "SATA",           ENV_FS_SRC_SATA,    "",                  "" },
