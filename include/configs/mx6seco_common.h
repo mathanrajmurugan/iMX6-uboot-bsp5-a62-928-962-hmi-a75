@@ -175,7 +175,7 @@
 #define CONFIG_SYS_INIT_RAM_ADDR       IRAM_BASE_ADDR
 #define CONFIG_SYS_INIT_RAM_SIZE       IRAM_SIZE
 
-#if (CONFIG_DDR_SIZE == 0)
+#if (CONFIG_DDR_SIZE == 0 || CONFIG_DDR_SIZE == 5)
 	#define CONFIG_DDR_32BIT
 #elif (CONFIG_DDR_SIZE > 0)
 	#define CONFIG_DDR_64BIT
@@ -451,7 +451,7 @@
 
 #define CONFIG_SYS_MMC_IMG_LOAD_PART   1
 
-#define CONFIG_ROOT_DEV_ID       2
+#define CONFIG_ROOT_DEV_ID       1
 #define CONFIG_ROOT_PARTITION    2
 
 #define CONFIG_BOOTARGS_BASE  "setenv bootargs ${console_interface} ${memory} ${cpu_freq} ${videomode} ${root_dev}"

@@ -392,7 +392,7 @@ static data_boot_dev_t filesystem_dev_list [] = {
 
 
 /*  __________________________________________________________________________
- * |______________________________ uQ7_iMX6 (A62) ____________________________|
+ * |_____________________________ USBC_iMX6 (A62) ____________________________|
  */
 #if defined(CONFIG_MX6Q_SECO_A62) || defined(CONFIG_MX6DL_SECO_A62)  || defined(CONFIG_MX6S_SECO_A62)
 static data_boot_dev_t kern_dev_list [] = {
@@ -1132,13 +1132,20 @@ static int do_seco_config (cmd_tbl_t *cmdtp, int flag, int argc, char * const ar
 /*  __________________________________________________________________________
  * |______________________________ MEMORY RAM ________________________________|
  */
+#define DEFAULT_CMA_VALUE 396
 	if ( set_memory ) {
 		ulong size = PHYS_SDRAM_SIZE;
 		max_size = size / (1 << 20); // get size in MB
 		if (max_size > 2100)
 			max_size = 3800;
+		if ( min_size > max_size )
+			min_size = max_size;
 		line = do_ramsize (min_size, max_size);
-		sprintf (memory_buff, "mem=%sM", line);
+		if ( (ulong)atoi(line) < DEFAULT_CMA_VALUE ) {
+			sprintf (memory_buff, "mem=%sM cma=96M", line);
+		} else {
+			sprintf (memory_buff, "mem=%sM", line);
+		}
 		setenv ("memory", memory_buff);
 	}
 

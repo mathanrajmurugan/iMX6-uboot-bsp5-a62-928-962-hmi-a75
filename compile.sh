@@ -34,7 +34,7 @@ CLEAN="CLEAN"
 EXTRA_UART=""
 DEBUG_UART5=""
 RTC_LOW_POWER=""
-COMPILER_PATH="/opt/compilers/arm-poky-linux-gnueabi_4.9.1/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-"
+COMPILER_PATH="/opt/yocto/fsl-release-bsp/build_seco/tmp/sysroots/x86_64-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-"
 UBOOT_VER="2013"
 
 SUFFIX=""
@@ -168,7 +168,7 @@ ddr_size_view() {
 			2 "1Giga, bus size 64, active CS = 1 (256Mx4)" ${VAL[2]} \
 			3 "2Giga, bus size 64, active CS = 1 (512Mx4)" ${VAL[3]} \
  			4 "4Giga, bus size 64, active CS = 2 (512Mx8) - for QSEVEN only" ${VAL[4]} \
-			5 "256M,  bus size 32, active CS = 1 (256Mx1)" ${VAL[5]} \
+			5 "256M,  bus size 16, active CS = 1 (256Mx1)" ${VAL[5]} \
 			2>&1 1>&3)
 	 
 	# close fd
@@ -419,7 +419,7 @@ function check_mem_size () {
 		echo "RAM size selected: 4Giga, bus size 64, active CS = 2 (512Mx8) - for QSEVEN only"
 		SUFFIX=${SUFFIX}-4GB
 	elif [ "${MEM_SIZE}" == "5" ]; then
-		echo "RAM size selected: 256M, bus size 32, active CS = 1"
+		echo "RAM size selected: 256M, bus size 16, active CS = 1"
 		SUFFIX=${SUFFIX}-256MB
 	else
 		echo "ERROR: wrong DDR size selected"
