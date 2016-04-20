@@ -514,6 +514,7 @@ static lvds_video_spec_t lvds_video_spec_list [] = {
 	{ "WXGA	  [1368x768]",  "LDB-WXGA",    "RGB24",  "",         1 },
 	{ "SXGA	  [1280x1024]", "LDB-SXGA",    "RGB24",  "",         1 },
 	{ "HD1080 [1920x1080]", "LDB-1080P60", "RGB24",  "ldb=spl0", 2 },
+	{ "VGA-NL [600x480]",   "LDB-VGA-NL",  "RGB666", "",         1 },
 };
 
 
