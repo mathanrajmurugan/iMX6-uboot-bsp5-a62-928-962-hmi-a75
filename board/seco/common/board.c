@@ -70,21 +70,22 @@ int scode_value (int seco_code) {
 }
 
 
-int get_seco_board_revision (struct i2c_pads_info *i2c_pad, unsigned char *boardrev) {
+int get_seco_board_revision (struct i2c_pads_info *i2c_pad, unsigned char **boardrev) {
 
-	boardrev = malloc (4 * sizeof(unsigned char));
+	*boardrev = malloc (4 * sizeof(unsigned char));
+
 	if ( !boardrev )
 		return 0;
 
 	setup_i2c(0, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE, i2c_pad);
 	/* SECO BOARD REV */
 	i2c_probe (0x40);
-	if (i2c_read (0x40, 0x0E, 1, boardrev, 2)) {
+	if (i2c_read (0x40, 0x0E, 1, *boardrev, 2)) {
 		printf ("Read Board Revision Failed\n");
 	}
-	if (i2c_read (0x40, 0x0C, 1, boardrev, 2)) {
+	if (i2c_read (0x40, 0x0C, 1, &(*boardrev)[2], 2)) {
 		printf ("Read Board Revision Failed\n");
-	}	
+	}
 
 	return 4;
 }
@@ -114,32 +115,42 @@ void print_boot_device (void) {
 	uint bt_usdhc_num   = (soc_sbmr & 0x00001800) >> 11;
 	uint bt_port_select = (soc_sbmr & 0x05000000) >> 24;
 
+	uint id = -1;
+	uint port_sel = -1;
+	uint mtype = -1;
+
 	int index;
 
 	for ( index = 0 ; index < SECO_NUM_BOOT_DEV ; index++ ) {
-	
-		if ( bt_mem_ctl >= boot_mem_dev_list[index].mem_ctl_min && 
+
+		if ( bt_mem_ctl >= boot_mem_dev_list[index].mem_ctl_min &&
 				bt_mem_ctl <= boot_mem_dev_list[index].mem_ctl_max ) {
 
-			if ( boot_mem_dev_list[index].mem_type != -1 ) 
-				if ( boot_mem_dev_list[index].mem_type != bt_mem_type )
-					continue;
+			if ( boot_mem_dev_list[index].mem_type != -1 )
+				if ( boot_mem_dev_list[index].mem_type == bt_mem_type )
+					mtype = bt_mem_type;
 
 			if ( boot_mem_dev_list[index].bt_usdhc_num != -1 )
-				if ( boot_mem_dev_list[index].bt_usdhc_num != bt_usdhc_num )
-					continue;
+				id = bt_usdhc_num + 1;
 
 			if ( boot_mem_dev_list[index].bt_port_select != -1 )
-				if ( boot_mem_dev_list[index].bt_port_select != bt_port_select )
-					continue;
+				if ( boot_mem_dev_list[index].bt_port_select == bt_port_select )
+					port_sel = bt_port_select;
+
 			break;
 
 		}
 	}
 
-	if ( index < SECO_NUM_BOOT_DEV )
-		printf ("Boot: %s\n", boot_mem_dev_list[index].label);
-	else
+	if ( index < SECO_NUM_BOOT_DEV ) {
+		printf ("Boot: %s", boot_mem_dev_list[index].label);
+		if ( id != -1 )
+			printf (" (bus id: %d)\n", id);
+		if ( port_sel != -1 )
+			printf ("%d\n", port_sel);
+		if ( mtype != -1 )
+			printf ("%d\n", mtype);
+	} else
 		printf ("Boot: Unknow\n"); 
 
 

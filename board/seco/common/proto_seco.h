@@ -63,7 +63,7 @@ extern void boot_validate (int gpio, const iomux_v3_cfg_t *gpio_pad);
  * |                               BOARD REVISION                             |
  * |__________________________________________________________________________|
  */
-extern int get_seco_board_revision (struct i2c_pads_info *i2c_pad, unsigned char *boardrev);
+extern int get_seco_board_revision (struct i2c_pads_info *i2c_pad, unsigned char **boardrev);
 
 
 

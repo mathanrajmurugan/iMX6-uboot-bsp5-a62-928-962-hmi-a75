@@ -341,11 +341,13 @@ int board_late_init (void) {
 #endif
 
 #ifdef CONFIG_SYS_I2C_MXC
-	s = get_seco_board_revision(&i2c_pad_info0, boardrev);
+	s = get_seco_board_revision(&i2c_pad_info0, &boardrev);
 	for ( i = 0 ; i < s ; i++ )
 		gd->bd->board_revision[i] = boardrev[i];
-	printf ("dav 0-1  %#X   %#X\n", gd->bd->board_revision[0], gd->bd->board_revision[1]);
-	printf ("dav 2-3  %#X   %#X\n", gd->bd->board_revision[2], gd->bd->board_revision[3]);
+
+	printf ("ID: 9%X, rev %c%X\n", gd->bd->board_revision[1],
+			((gd->bd->board_revision[0] & 0xF0) >> 4) + 'a',
+			(gd->bd->board_revision[0] & 0x0F));
 #endif
 
 #ifdef CONFIG_PFUZE100_PMIC_I2C
