@@ -53,9 +53,9 @@ struct i2c_pads_info i2c_pad_info2 = {
 		.gp        = IMX_GPIO_NR(1, 5),
 	},
 	.sda = {
-		.i2c_mode  = MX6_PAD_GPIO_16__I2C3_SDA   | PC,
-		.gpio_mode = MX6_PAD_GPIO_16__GPIO7_IO11 | PC,
-		.gp        = IMX_GPIO_NR(7, 11),
+		.i2c_mode  = MX6_PAD_GPIO_6__I2C3_SDA   | PC,
+		.gpio_mode = MX6_PAD_GPIO_6__GPIO1_IO06 | PC,
+		.gp        = IMX_GPIO_NR(1, 6),
 	},
 };
 
@@ -339,6 +339,15 @@ int board_late_init (void) {
 
 #ifdef CONFIG_CMD_BMODE
 	add_board_boot_modes(board_boot_modes);
+#endif
+#ifdef CONFIG_SYS_I2C_MXC
+	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x27, &i2c_pad_info2);
+#endif
+
+#ifdef CONFIG_PFUZE100_PMIC_I2C
+	ret = setup_pmic_voltages(&i2c_pad_info1);
+	if (ret)
+		return -1;
 #endif
 
 #ifdef CONFIG_ENV_IS_IN_MMC
