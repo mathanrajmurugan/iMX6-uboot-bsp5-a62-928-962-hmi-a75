@@ -52,7 +52,7 @@
 #elif ( DDR_SIZE_CONF == DDR_SIZE_4x512 )
 	#define CONFIG_DDR_MB 2048
 #elif ( DDR_SIZE_CONF == DDR_SIZE_8x512 )
-	#define CONFIG_DDR_MB 4096
+	#define CONFIG_DDR_MB 3800
 #elif ( DDR_SIZE_CONF == DDR_SIZE_1x256 )
 	#define CONFIG_DDR_MB 256
 #endif
