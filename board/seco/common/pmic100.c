@@ -51,6 +51,7 @@
 #define PFUZE100_SW1CCONF	0x32
 #define PFUZE100_SW1ABC_SETP(x)	((x - 3000) / 250)
 #define PFUZE100_VGEN5CTL	0x70
+#define PFUZE100_SW4VOL		0x4a
 
 /* set all switches APS in normal and PFM mode in standby */
 static int setup_pmic_mode(int chip)
@@ -88,7 +89,9 @@ int setup_pmic_voltages (struct i2c_pads_info *i2c_pad)
 {
 	unsigned char value, rev_id = 0;
 
-	setup_i2c (0, CONFIG_SYS_I2C_SPEED, CONFIG_PMIC_I2C_SLAVE, i2c_pad);
+	setup_i2c (CONFIG_PMIC_I2C_BUS, CONFIG_SYS_I2C_SPEED, CONFIG_PMIC_I2C_SLAVE, i2c_pad);
+
+	i2c_set_bus_num(CONFIG_PMIC_I2C_BUS);
 
 	if (!i2c_probe(CONFIG_PMIC_I2C_SLAVE)) {
 		if (i2c_read(CONFIG_PMIC_I2C_SLAVE, PFUZE100_DEVICEID, 1, &value, 1)) {
@@ -167,6 +170,11 @@ int setup_pmic_voltages (struct i2c_pads_info *i2c_pad)
 		value |= 0x1F;
 		if (i2c_write(CONFIG_PMIC_I2C_SLAVE, PFUZE100_VGEN5CTL, 1, &value, 1)) {
 			printf("Set VGEN5CTL error!\n");
+			return -1;
+		}
+		value = 0x23;
+		if (i2c_write(CONFIG_PMIC_I2C_SLAVE, PFUZE100_SW4VOL, 1, &value, 1)) {
+			printf("Set SW4 error!\n");
 			return -1;
 		}
 	} else {

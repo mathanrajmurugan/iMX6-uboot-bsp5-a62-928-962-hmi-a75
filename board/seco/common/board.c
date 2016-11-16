@@ -78,6 +78,9 @@ int get_seco_board_revision (struct i2c_pads_info *i2c_pad, unsigned char **boar
 		return 0;
 
 	setup_i2c(0, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE, i2c_pad);
+
+	i2c_set_bus_num(0);
+
 	/* SECO BOARD REV */
 	i2c_probe (0x40);
 	if (i2c_read (0x40, 0x0E, 1, *boardrev, 2)) {
