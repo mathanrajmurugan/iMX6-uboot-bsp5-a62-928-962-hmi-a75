@@ -454,15 +454,23 @@
 #define CONFIG_ROOT_DEV_ID       1
 #define CONFIG_ROOT_PARTITION    2
 
-#define CONFIG_BOOTARGS_BASE  "setenv bootargs ${console_interface} ${memory} ${cpu_freq} ${videomode} ${root_dev}"
+#define CONFIG_BOOTARGS_BASE  "setenv bootargs ${console_interface} ${memory} ${cpu_freq} ${videomode} ${root_dev} ${serial_dev} ${audio_codec}"
 
-
+#if defined(CONFIG_MX6Q_SECO_928) || defined(CONFIG_MX6DL_SECO_928)  || defined(CONFIG_MX6S_SECO_928) || defined(CONFIG_MX6Q_SECO_962) || defined(CONFIG_MX6DL_SECO_962)  || defined(CONFIG_MX6S_SECO_962) || defined(CONFIG_MX6Q_SECO_A75) || defined(CONFIG_MX6DL_SECO_A75)  || defined(CONFIG_MX6S_SECO_A75) 
+#define CONFIG_ENV_COMMON                                        \
+	"bootdelay="__stringify(CONFIG_BOOTDELAY)"\0"            \
+	"stdin=serial\0"                                         \
+	"stdout=serial\0"                                        \
+	"stderr=serial\0"					 \
+	"serial_dev=serial_dev=uart\0"				 \
+	"audio_codec=audio_codec=ac97_standard\0"
+#else
 #define CONFIG_ENV_COMMON                                        \
 	"bootdelay="__stringify(CONFIG_BOOTDELAY)"\0"            \
 	"stdin=serial\0"                                         \
 	"stdout=serial\0"                                        \
 	"stderr=serial\0"
-
+#endif
 
 #define CONFIG_ENV_BOOTARG_BASE                                                                               \
 	"console_interface='console=" CONFIG_CONSOLE_DEV "," __stringify(CONFIG_BAUDRATE)"'\0"                \
